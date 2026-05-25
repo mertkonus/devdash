@@ -46,3 +46,19 @@
 - `app/auth/routes.py` içerisinde `/register`, `/login` ve `/logout` rotalarının mantığı kuruldu. Giriş yapmış kullanıcıların bu sayfalara tekrar erişmesi engellenerek doğrudan anasayfaya postalanmaları sağlandı. Şifrelerin `werkzeug.security` ile hash kontrolü yapıldı ve kullanıcıya dönecek tüm bildirimler için Türkçe flash mesajları tanımlandı.
 - `app/__init__.py` (Application Factory) dosyası güncellenerek `LoginManager` nesnesi uygulamaya bağlandı; oturum yönetimi için gereken `user_loader` fonksiyonu modern `db.session.get()` standardıyla koda eklendi.
 
+## Oturum: 4
+**Tarih:** 25 Mayıs 2026
+**Mod:** Plan
+**Model:** Gemini 3.1 Pro
+**Görünüm:** Manager
+**Hedef:** Kayıt ve Giriş Akışının (Auth) Frontend / HTML Tasarımlarının ve Şablon Entegrasyonunun Tamamlanması
+
+### Neler Yapıldı?
+- Oturum 3'te kurulan Python backend altyapısını görselleştirmek ve kullanıcı deneyimine sunmak üzere yepyeni bir oturumla frontend/şablon geliştirme süreci başlatıldı.
+- Projenin ana iskeletini oluşturacak olan `app/templates/base.html` şablonu yazıldı. Bootstrap 5 CSS ve JS kütüphaneleri CDN üzerinden projeye dahil edildi.
+- `base.html` içerisindeki navigasyon barı (navbar) dinamik hale getirildi. `{% if current_user.is_authenticated %}` Jinja2 kontrolüyle, sisteme giriş yapmış kullanıcılara "Notlarım", "Görevlerim" ve "Çıkış Yap" linklerinin, ziyaretçilere ise sadece "Giriş Yap" ve "Kayıt Ol" bağlantılarının görünmesi sağlandı. Ayrıca Bootstrap'in `alert-dismissible` sınıfı kullanılarak sayfanın üst orta kısmında belirecek dinamik Türkçe flash mesaj alanı entegre edildi.
+- `app/templates/auth/login.html` ve `app/templates/auth/register.html` arayüz dosyaları sıfırdan oluşturuldu. Her iki şablonun da `{% extends "base.html" %}` ifadesiyle ana tasarımdan miras alması (Jinja2 template inheritance) sağlandı.
+- Formlar, Bootstrap 5'in `card` ve `row justify-content-center` bileşenleri kullanılarak dikey ve yatayda ortalanmış, mobil uyumlu (responsive) kutular içine yerleştirildi.
+- Güvenlik kısıtlarına tam uyum sağlamak adına, her iki formun da gövdesine `{{ form.hidden_tag() }}` kodu eklenerek CSRF Token koruması arayüze zorunlu olarak enjekte edildi.
+- Kullanıcının formları eksik veya hatalı doldurması durumunda tetiklenecek olan doğrulama hataları (örneğin e-postanın önceden alınmış olması veya şifrelerin eşleşmemesi), Jinja2 döngüleri yardımıyla ilgili alanın hemen altında Bootstrap `invalid-feedback` ve `text-danger` sınıflarıyla kırmızı uyarı metni olarak esnek bir biçimde kurgulandı.
+
