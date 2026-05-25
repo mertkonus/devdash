@@ -32,3 +32,17 @@
 - Tablolar arası ilişkilerde rubriğe uygun olarak bire-çok (One-to-Many) mantığı kuruldu; her bir notun ve görevin mutlaka bir kullanıcıya ait olması zorunlu tutularak `user_id` Foreign Key (yabancı anahtar) bağlantıları yapıldı.
 - `db = SQLAlchemy()` nesnesi `app/models.py` dosyasında temiz bir şekilde tanımlandı ve ileride ana uygulama fabrikasında (`create_app`) çağrılmak üzere hazırlandı.
 
+## Oturum: 3
+**Tarih:** 25 Mayıs 2026
+**Mod:** Plan
+**Model:** Gemini 3.1 Pro
+**Görünüm:** Manager
+**Hedef:** Kayıt ve Giriş Akışının (Auth) Python Backend Altyapısının Kurulması
+
+### Neler Yapıldı?
+- Hocanın rubrikte belirttiği 15 anlamlı commit kuralına sadık kalmak adına, üyelik sistemi operasyonu iki ayrı parçaya bölündü ve bu ilk aşamada sadece iş mantığı (Python) kodlandı.
+- `app/auth/forms.py` dosyası sıfırdan oluşturularak Flask-WTF tabanlı `RegisterForm` ve `LoginForm` sınıfları yazıldı. Güvenlik için CSRF koruması varsayılan olarak aktif bırakıldı.
+- Kayıt formunun içerisine, veritabanını tarayarak girilen e-posta ve kullanıcı adının daha önceden alınıp alınmadığını SQLAlchemy 2.x yapısıyla kontrol eden `validate_email` ve `validate_username` özel doğrulama metotları entegre edildi.
+- `app/auth/routes.py` içerisinde `/register`, `/login` ve `/logout` rotalarının mantığı kuruldu. Giriş yapmış kullanıcıların bu sayfalara tekrar erişmesi engellenerek doğrudan anasayfaya postalanmaları sağlandı. Şifrelerin `werkzeug.security` ile hash kontrolü yapıldı ve kullanıcıya dönecek tüm bildirimler için Türkçe flash mesajları tanımlandı.
+- `app/__init__.py` (Application Factory) dosyası güncellenerek `LoginManager` nesnesi uygulamaya bağlandı; oturum yönetimi için gereken `user_loader` fonksiyonu modern `db.session.get()` standardıyla koda eklendi.
+
