@@ -62,3 +62,17 @@
 - Güvenlik kısıtlarına tam uyum sağlamak adına, her iki formun da gövdesine `{{ form.hidden_tag() }}` kodu eklenerek CSRF Token koruması arayüze zorunlu olarak enjekte edildi.
 - Kullanıcının formları eksik veya hatalı doldurması durumunda tetiklenecek olan doğrulama hataları (örneğin e-postanın önceden alınmış olması veya şifrelerin eşleşmemesi), Jinja2 döngüleri yardımıyla ilgili alanın hemen altında Bootstrap `invalid-feedback` ve `text-danger` sınıflarıyla kırmızı uyarı metni olarak esnek bir biçimde kurgulandı.
 
+## Oturum: 5
+**Tarih:** 29 Mayıs 2026
+**Mod:** Plan
+**Model:** Gemini 3.1 Pro
+**Görünüm:** Manager
+**Hedef:** Veritabanı Şema Sürüm Kontrol Altyapısının (Flask-Migrate) Başlatılması
+
+### Neler Yapıldı?
+- Uygulamanın veritabanı şema göçlerini (migration) düzenli bir şekilde yönetebilmek amacıyla projeye `Flask-Migrate` kütüphanesi dahil edildi.
+- `app/__init__.py` (Application Factory) dosyası güncellenerek `Migrate` nesnesi tanımlandı ve `migrate.init_app(app, db)` koduyla SQLAlchemy ile entegrasyonu sağlandı.
+- Terminal üzerinden `flask db init` komutu çalıştırılarak proje kök dizininde `migrations/` klasörü sıfırdan oluşturuldu.
+- Komutun ardından veritabanı sürüm kontrolünü yönetecek olan Alembic yapılandırma dosyalarının (`alembic.ini`, `env.py`, `script.py.mako`) ve versiyon kayıtları için `versions/` dizininin eksiksiz şekilde üretildiği doğrulandı.
+- Altyapı kurulumu sorunsuz tamamlanarak bir sonraki şema oluşturma aşaması için hazır hale getirildi.
+
