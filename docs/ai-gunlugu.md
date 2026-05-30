@@ -133,3 +133,99 @@ Arayüz giydirme süreçlerinde ajanlar görsel tasarıma odaklanıp web formlar
 
 ### Sonraki Oturum İçin Notlar
 - Veritabanı sürüm kontrol süreçlerinin (Flask-Migrate) başlatılması ve tabloların fiziksel hale getirilmesi.
+
+---
+
+## Oturum 5: DevDash Veritabanı Versiyonlama (Migrate) ve Altyapı Kurulumu
+**Tarih:** 29 Mayıs 2026 — **Saat:** 13:30 - 15:45  
+**Kullanılan Model/Mod:** Antigravity IDE - Plan & Act Modu
+
+### 🎯 Oturum Hedefleri
+1. DevDash projesinde veritabanı şema yönetimini otomatikleştirmek adına Flask-Migrate altyapısının entegre edilmesi.
+2. Tasarlanan User, Note ve Task modellerine ait ilk veritabanı göç (migration) taslağının üretilmesi.
+3. Üretilen taslağın yerel SQLite (`app.db`) veritabanına fiziksel olarak uygulanarak tabloların hazır hale getirilmesi.
+
+### 💻 Yapılan Geliştirmeler ve Değişiklikler
+
+#### 1. Flask-Migrate Entegrasyonu
+* **`app/__init__.py`:** Factory fonksiyonu (`create_app`) içerisine `flask_migrate` kütüphanesinden `Migrate` nesnesi dahil edildi. `migrate.init_app(app, db)` satırı eklenerek veritabanı ile versiyonlama motoru birbirine bağlandı.
+
+#### 2. Veritabanı Şema Üretimi ve Fiziksel Dağıtım
+* Sandbox terminali üzerinden `$env:FLASK_APP="run.py"` ortam değişkeni set edilerek sırasıyla şu operasyonlar yürütüldü:
+    * `flask db init` komutuyla projeye `migrations/` mimari dizini kazandırıldı.
+    * `flask db migrate -m "initial_schema"` komutu tetiklenerek modeller otomatik tarandı ve `migrations/versions/4d3ad2f79f13_initial_schema.py` dosyası altında ilk SQL şemaları (User, Note, Task tabloları, veri tipleri ve Foreign Key ilişkileri) kod düzeyinde üretildi.
+    * `flask db upgrade` komutu koşturularak yerel dizinde `app.db` fiziksel SQLite veritabanı dosyası ilk kez ayağa kaldırıldı ve tablolar içeriye mühürlendi.
+    * `flask db current` sorgusuyla veritabanının güncel takip sürümünün başarıyla `4d3ad2f79f13 (head)` noktasına eşitlendiği teknik olarak doğrulandı.
+
+### 🔍 Karşılaşılan Hatalar ve Çözümler
+* **Git Uyarı Yönetimi:** `git add .` aşamasında üretilen göç dosyaları için Windows ve Linux satır sonu karakter farklılığından kaynaklı terminalde beliren sarı renkli CRLF/LF uyarıları (`warning: in the working copy of...`) incelendi. Bu durumun projenin çalışma stabilitesine veya Git geçmişine bir engel teşkil etmediği siber güvenlik ve sistem mimarisi standartlarında doğrulanarak süreç pürüzsüzce devam ettirildi.
+
+### 🧠 Öğrenilenler ve Kazanımlar
+* Canlı projelerde veritabanını manuel SQL komutlarıyla veya sıfırlayarak yönetmek yerine, Flask-Migrate (Alembic) kullanarak veri kaybı yaşamadan şema versiyonlamanın önemi ve mantığı kavrandı.
+* Windows PowerShell üzerinde Flask ortam değişkenlerini (`$env:FLASK_APP`) doğru yönetme pratikleri pekiştirildi.
+
+---
+
+## Oturum 6: Çekirdek Özelliklerin (Notlar ve Görevler) Geliştirilmesi
+**Tarih:** 30 Mayıs 2026 — **Saat:** 14:08 - 15:20  
+**Kullanılan Model/Mod:** Antigravity IDE - Plan & Act Modu
+
+### 🎯 Oturum Hedefleri
+1. DevDash uygulamasının ana işlevselliği olan "Notlar" ve "Görevler" modülleri için uçtan uca backend ve frontend katmanlarının inşa edilmesi.
+2. SQLAlchemy 2.x standartlarına uygun, giriş yapmış kullanıcıya özel (`current_user`) veri izolasyonu ve güvenli silme/güncelleme mekanizmalarının kurulması.
+3. Bootstrap 5 kütüphanesi kullanılarak, notların ve görevlerin listelenebileceği, durumlarının dinamik olarak değiştirilebileceği responsive bir gösterge paneli (Dashboard) tasarımı.
+
+### 💻 Yapılan Geliştirmeler ve Değişiklikler
+
+#### 1. Backend Katmanı (Rotalar ve Form Yapıları)
+* **`app/main/forms.py` (Yeni):** Flask-WTF kütüphanesi kullanılarak, veri girişlerinde otomatik CSRF koruması sağlayan `NoteForm` (Başlık ve İçerik alanları) ve `TaskForm` (Görev Adı ve Açıklama alanları) sınıfları tanımlandı.
+* **`app/main/routes.py` (Yeni/Düzenleme):** Tüm veri operasyonları `@login_required` dekoratörü ile koruma altına alındı.
+    * `/note/add` ve `/task/add` rotalarıyla form verileri doğrulanarak aktif kullanıcıya ait yeni kayıtlar üretildi.
+    * `/note/delete/<id>` ve `/task/delete/<id>` rotalarında sadece ID kontrolü yerine `where(Model.user_id == current_user.id)` kısıtı eklenerek yetkisiz veri silme girişimleri (ID spoofing) engellendi.
+    * `/task/toggle/<id>` rotasıyla veritabanında ilgili görevin statüsü "Yapılacak" ve "Bitti" durumları arasında anlık olarak güncellenecek şekilde kurgulandı.
+
+#### 2. Frontend Katmanı (Bootstrap 5 & Jinja2 Entegrasyonu)
+* **`app/templates/main/index.html` (Yeni):** Ana sayfa tasarımı bilgisayar görünümlerinde iki eşit sütuna (`col-md-6`), mobil görünümlerde ise dikey esnek bloklara dönüştürülecek şekilde responsive tasarlandı.
+* **Mavi (Primary) Tonlu Notlar Alanı:** Kullanıcının notları Jinja2 döngüsüyle modern Bootstrap kartları (`card`) şeklinde listelendi ve her kartın altına form tabanlı güvenli silme butonları yerleştirildi.
+* **Yeşil (Success) Tonlu Görevler Alanı:** Tamamlanan görevlerin (`task.status == 'Bitti'`) arayüzde dinamik olarak üstünün çizilmesi (`text-decoration-line-through`) ve arka planının soluklaştırılması (`text-muted`, `bg-light`) Jinja2 lokal değişkenleri yardımıyla sağlandı. Görev durumunu anlık değiştiren mikro buton grupları entegre edildi.
+
+### 🔍 Karşılaşılan Hatalar ve Çözümler
+* **Kritik Durum:** Ajan, yerel dizinde önceki adımdan kalan ve içi boş olan `app.db` dosyasını tespit ettiğinde doğrudan veri sorgulama hatası yaşanmaması adına akıllıca bir uyarı üretti. Bu doğrultuda, durum kontrolünden (`current`) önce veritabanı tablolarının fiziksel olarak işlenmesi adına plan revize edilerek `flask db upgrade` adımı pürüzsüzce yürütüldü ve şema takibi `4d3ad2f79f13` sürümüne başarıyla eşitlendi.
+
+### 🧠 Öğrenilenler ve Kazanımlar
+* Flask-WTF form mimarisinin backend doğrulama süreçlerini ne kadar kısalttığı deneyimlendi.
+* Jinja2 şablon motoru içerisinde logic operasyonlar (`{% set is_done = ... %}`) yürüterek arka plana yük bindirmeden dinamik kullanıcı deneyimi (UX) tasarlama pratikleri kazanıldı.
+* Veritabanı sorgularında `current_user.id` kısıtlamasının, siber güvenlik ve veri izolasyonu açısından ne kadar hayati olduğu kavrandı.
+
+---
+
+## Oturum 6: Çekirdek Özelliklerin (Notlar ve Görevler) Geliştirilmesi
+**Tarih:** 30 Mayıs 2026 — **Saat:** 14:05 - 15:20  
+**Kullanılan Model/Mod:** Antigravity IDE - Plan & Act Modu
+
+### 🎯 Oturum Hedefleri
+1. DevDash uygulamasının ana işlevselliği olan "Notlar" ve "Görevler" modülleri için uçtan uca backend ve frontend katmanlarının inşa edilmesi.
+2. SQLAlchemy 2.x standartlarına uygun, giriş yapmış kullanıcıya özel (`current_user`) veri izolasyonu ve güvenli silme/güncelleme mekanizmalarının kurulması.
+3. Bootstrap 5 kütüphanesi kullanılarak, notların ve görevlerin listelenebileceği, durumlarının dinamik olarak değiştirilebileceği responsive bir gösterge paneli (Dashboard) tasarımı.
+
+### 💻 Yapılan Geliştirmeler ve Değişiklikler
+
+#### 1. Backend Katmanı (Rotalar ve Form Yapıları)
+* **`app/main/forms.py` (Yeni):** Flask-WTF kütüphanesi kullanılarak, veri girişlerinde otomatik CSRF koruması sağlayan `NoteForm` (Başlık ve İçerik alanları) ve `TaskForm` (Görev Adı ve Açıklama alanları) sınıfları tanımlandı.
+* **`app/main/routes.py` (Yeni/Düzenleme):** Tüm veri operasyonları `@login_required` dekoratörü ile koruma altına alındı.
+    * `/note/add` ve `/task/add` rotalarıyla form verileri doğrulanarak aktif kullanıcıya ait yeni kayıtlar üretildi.
+    * `/note/delete/<id>` ve `/task/delete/<id>` rotalarında sadece ID kontrolü yerine `where(Model.user_id == current_user.id)` kısıtı eklenerek yetkisiz veri silme girişimleri (ID spoofing) engellendi.
+    * `/task/toggle/<id>` rotasıyla veritabanında ilgili görevin statüsü "Yapılacak" ve "Bitti" durumları arasında anlık olarak güncellenecek şekilde kurgulandı.
+
+#### 2. Frontend Katmanı (Bootstrap 5 & Jinja2 Entegrasyonu)
+* **`app/templates/main/index.html` (Yeni):** Ana sayfa tasarımı bilgisayar görünümlerinde iki eşit sütuna (`col-md-6`), mobil görünümlerde ise dikey esnek bloklara dönüştürülecek şekilde responsive tasarlandı.
+* **Mavi (Primary) Tonlu Notlar Alanı:** Kullanıcının notları Jinja2 döngüsüyle modern Bootstrap kartları (`card`) şeklinde listelendi ve her kartın altına form tabanlı güvenli silme butonları yerleştirildi.
+* **Yeşil (Success) Tonlu Görevler Alanı:** Tamamlanan görevlerin (`task.status == 'Bitti'`) arayüzde dinamik olarak üstünün çizilmesi (`text-decoration-line-through`) ve arka planının soluklaştırılması (`text-muted`, `bg-light`) Jinja2 lokal değişkenleri yardımıyla sağlandı. Görev durumunu anlık değiştiren mikro buton grupları entegre edildi.
+
+### 🔍 Karşılaşılan Hatalar ve Çözümler
+* **Kritik Durum:** Ajan, yerel dizinde önceki adımdan kalan ve içi boş olan `app.db` dosyasını tespit ettiğinde doğrudan veri sorgulama hatası yaşanmaması adına akıllıca bir uyarı üretti. Bu doğrultuda, durum kontrolünden (`current`) önce veritabanı tablolarının fiziksel olarak işlenmesi adına plan revize edilerek `flask db upgrade` adımı pürüzsüzce yürütüldü ve şema takibi `4d3ad2f79f13` sürümüne başarıyla eşitlendi.
+
+### 🧠 Öğrenilenler ve Kazanımlar
+* Flask-WTF form mimarisinin backend doğrulama süreçlerini ne kadar kısalttığı deneyimlendi.
+* Jinja2 şablon motoru içerisinde logic operasyonlar (`{% set is_done = ... %}`) yürüterek arka plana yük bindirmeden dinamik kullanıcı deneyimi (UX) tasarlama pratikleri kazanıldı.
+* Veritabanı sorgularında `current_user.id` kısıtlamasının, siber güvenlik ve veri izolasyonu açısından ne kadar hayati olduğu kavrandı.
