@@ -15,3 +15,8 @@ Kişisel Not ve Görev Takip Sitesi. Bu proje İnternet Programcılığı dersi 
 4. `.env.example` dosyasını `.env` olarak kopyalayın ve içerisindeki değişkenleri kendi ortamınıza göre ayarlayın.
 5. Veritabanını oluşturun: `flask db upgrade` (Migrasyonlar eklendiğinde kullanılacak)
 6. Uygulamayı çalıştırın: `python run.py`
+
+## 🎬 Proje Demo Videosu
+Uygulamanın temel akışını, yeni nesil karanlık tema arayüzünü, gelişmiş tam metin arama motorunu ve tüm teknik kabiliyetlerini içeren 3-5 dakikalık proje tanıtım ve demo videosuna aşağıdaki bağlantıdan ulaşabilirsiniz:
+
+▶️ [DevDash Proje Demo Videosunu İzlemek İçin Tıklayın](https://drive.google.com/file/d/1EQSY-E3hlan9aqJvYS0Vlwx206TKUJis/view?usp=drive_link)
