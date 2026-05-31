@@ -1,7 +1,9 @@
-from flask import render_template, redirect, url_for, flash
+import os
+from werkzeug.utils import secure_filename
+from flask import render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
 from app.main import main
-from app.main.forms import NoteForm, TaskForm
+from app.main.forms import NoteForm, TaskForm, ProfileForm
 from app.models import db, Note, Task
 
 @main.route('/', methods=['GET', 'POST'])
@@ -96,3 +98,32 @@ def toggle_task(task_id):
     else:
         flash('Görev bulunamadı veya güncelleme yetkiniz yok.', 'danger')
     return redirect(url_for('main.index'))
+
+@main.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    form = ProfileForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            avatar_dir = os.path.join(current_app.root_path, 'static', 'avatars')
+            os.makedirs(avatar_dir, exist_ok=True)
+            
+            original_filename = secure_filename(form.picture.data.filename)
+            filename = f"user_{current_user.id}_{original_filename}"
+            filepath = os.path.join(avatar_dir, filename)
+            form.picture.data.save(filepath)
+            
+            current_user.avatar_img = filename
+
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Hesabınız başarıyla güncellendi.', 'success')
+        return redirect(url_for('main.profile'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    
+    avatar = current_user.avatar_img if current_user.avatar_img else 'default_avatar.png'
+    avatar_file = url_for('static', filename='avatars/' + avatar)
+    return render_template('main/profile.html', title='Profil', form=form, avatar_file=avatar_file)

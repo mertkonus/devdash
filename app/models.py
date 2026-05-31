@@ -16,6 +16,7 @@ class User(UserMixin, db.Model):
     username: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     email: Mapped[str] = mapped_column(String(120), unique=True, index=True)
     password_hash: Mapped[Optional[str]] = mapped_column(String(256))
+    avatar_img: Mapped[Optional[str]] = mapped_column(String(150), default='default_avatar.png', nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
 
     notes: Mapped[List["Note"]] = relationship(back_populates="user", cascade="all, delete-orphan")
