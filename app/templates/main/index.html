@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- ARAMA ÇUBUĞU -->
+<div class="row mb-4 justify-content-center">
+    <div class="col-md-8">
+        <form method="GET" action="{{ url_for('main.index') }}" class="d-flex shadow-sm rounded-pill overflow-hidden">
+            <input type="text" name="q" value="{{ q }}" class="form-control border-0 px-4 py-3 bg-body" placeholder="Notlarda ve görevlerde ara..." aria-label="Ara">
+            <button class="btn btn-primary px-4 fw-bold" type="submit">Ara</button>
+        </form>
+        {% if q %}
+        <div class="text-center mt-2">
+            <small class="text-muted">"<strong>{{ q }}</strong>" için arama sonuçları. <a href="{{ url_for('main.index') }}" class="text-decoration-none">Temizle</a></small>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
 <div class="row">
     <!-- SOL SÜTUN: NOTLAR -->
     <div class="col-md-6 mb-4">
@@ -35,8 +50,8 @@
         
         <!-- Mevcut Notlar -->
         <div class="notes-list">
-            {% if current_user.notes %}
-                {% for note in current_user.notes %}
+            {% if notes %}
+                {% for note in notes %}
                 <div class="card shadow-sm mb-3 border-start border-primary border-4 rounded-4 card-hover bg-body">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
@@ -56,7 +71,7 @@
                 {% endfor %}
             {% else %}
                 <div class="alert shadow-sm border-0 rounded-4 text-muted bg-body-tertiary" role="alert">
-                    Henüz hiç notunuz yok.
+                    {% if q %} Arama kriterinize uygun not bulunamadı. {% else %} Henüz hiç notunuz yok. {% endif %}
                 </div>
             {% endif %}
         </div>
@@ -95,9 +110,9 @@
         
         <!-- Mevcut Görevler -->
         <div class="tasks-list">
-            {% if current_user.tasks %}
+            {% if tasks %}
                 <ul class="list-group shadow-sm border-0 rounded-4">
-                {% for task in current_user.tasks %}
+                {% for task in tasks %}
                     {% set is_done = task.status == 'Bitti' %}
                     <li class="list-group-item d-flex justify-content-between align-items-center {{ 'bg-body-tertiary text-muted border-secondary border-opacity-25' if is_done else 'border-success border-opacity-50 bg-body' }} mb-2 rounded-4 card-hover border p-3">
                         <div class="{{ 'text-decoration-line-through' if is_done else 'text-body' }}">
@@ -125,7 +140,7 @@
                 </ul>
             {% else %}
                 <div class="alert shadow-sm border-0 rounded-4 text-muted bg-body-tertiary" role="alert">
-                    Bekleyen bir göreviniz yok.
+                    {% if q %} Arama kriterinize uygun görev bulunamadı. {% else %} Bekleyen bir göreviniz yok. {% endif %}
                 </div>
             {% endif %}
         </div>

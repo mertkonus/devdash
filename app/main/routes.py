@@ -12,12 +12,25 @@ def index():
     note_form = NoteForm()
     task_form = TaskForm()
     
-    # Notlar ve Görevler ileride şablonda (HTML) listelenecek
-    # notes = current_user.notes
-    # tasks = current_user.tasks
-    
-    # Henüz HTML kodlaması yapmadığımız için sadece ilgili değişkenleri render edeceğiz.
-    return render_template('main/index.html', title='Panel', note_form=note_form, task_form=task_form)
+    q = request.args.get('q', '').strip()
+    if q:
+        notes = db.session.scalars(
+            db.select(Note).where(
+                Note.user_id == current_user.id,
+                (Note.title.ilike(f"%{q}%") | Note.content.ilike(f"%{q}%"))
+            )
+        ).all()
+        tasks = db.session.scalars(
+            db.select(Task).where(
+                Task.user_id == current_user.id,
+                (Task.title.ilike(f"%{q}%") | Task.description.ilike(f"%{q}%"))
+            )
+        ).all()
+    else:
+        notes = current_user.notes
+        tasks = current_user.tasks
+        
+    return render_template('main/index.html', title='Panel', note_form=note_form, task_form=task_form, notes=notes, tasks=tasks, q=q)
 
 @main.route('/note/add', methods=['POST'])
 @login_required
