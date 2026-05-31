@@ -16,6 +16,11 @@
         .card-hover {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        /* Özel odaklanma (focus) görünümü - Premium his */
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+            border-color: #86b7fe;
+        }
     </style>
 </head>
 <body>
@@ -29,12 +34,23 @@
                 <ul class="navbar-nav ms-auto align-items-lg-center">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.index') }}">Notlarım / Görevlerim</a>
+                            <a class="nav-link fw-bold" href="{{ url_for('main.index') }}">Panelim</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.profile') }}">Profil</a>
+                        
+                        <!-- Sağ Üst Profil İkonu (Avatar) -->
+                        <li class="nav-item ms-lg-3">
+                            <a class="nav-link p-0 d-flex align-items-center" href="{{ url_for('main.profile') }}" title="Profili Düzenle">
+                                {% if current_user.avatar_img and current_user.avatar_img != 'default_avatar.png' %}
+                                    <img src="{{ url_for('static', filename='avatars/' + current_user.avatar_img) }}" alt="Profil" class="rounded-circle border border-secondary shadow-sm" style="width: 32px; height: 32px; object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center shadow-sm fw-bold" style="width: 32px; height: 32px; font-size: 16px;">
+                                        {{ current_user.username[0]|upper }}
+                                    </div>
+                                {% endif %}
+                            </a>
                         </li>
-                        <li class="nav-item">
+                        
+                        <li class="nav-item ms-lg-3">
                             <a class="nav-link" href="{{ url_for('auth.logout') }}">Çıkış Yap</a>
                         </li>
                     {% else %}
