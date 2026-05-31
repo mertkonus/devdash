@@ -229,3 +229,39 @@ Arayüz giydirme süreçlerinde ajanlar görsel tasarıma odaklanıp web formlar
 * Flask-WTF form mimarisinin backend doğrulama süreçlerini ne kadar kısalttığı deneyimlendi.
 * Jinja2 şablon motoru içerisinde logic operasyonlar (`{% set is_done = ... %}`) yürüterek arka plana yük bindirmeden dinamik kullanıcı deneyimi (UX) tasarlama pratikleri kazanıldı.
 * Veritabanı sorgularında `current_user.id` kısıtlamasının, siber güvenlik ve veri izolasyonu açısından ne kadar hayati olduğu kavrandı.
+
+---
+
+## Oturum 7: Özel Hata Sayfaları, Profil Yönetimi ve Güvenli Dosya Yükleme (Avatar)
+**Tarih:** 31 Mei 2026 — **Saat:** 12:45 - 14:30  
+**Kullanılan Model/Mod:** Antigravity IDE - Plan & Act Modu
+
+### 🎯 Oturum Hedefleri
+1. Proje isterlerinde (PDF) yer alan Custom Error Pages mimarisinin kurularak 404 ve 500 hatalarının yakalanması.
+2. SQLAlchemy 2.x yapısına uygun olarak `User` modeline profil resmi (`avatar_img`) alanının entegre edilmesi ve şemanın güncellenmesi.
+3. Kullanıcıların profil bilgilerini güncelleyebileceği ve sunucuya güvenli bir şekilde profil fotoğrafı (Avatar) yükleyebileceği backend rotalarının ve Bootstrap 5 tabanlı `profile.html` arayüzünün tamamlanması.
+
+### 💻 Yapılan Geliştirmeler ve Değişiklikler
+
+#### 1. Modüler Hata Yönetimi (Custom Error Pages)
+* **`app/errors/` (Yeni Blueprint):** Hata yakalayıcıları ana uygulama mimarisinden izole etmek ve kod kalitesini artırmak adına yeni bir blueprint tanımlandı ve `app/__init__.py` (Application Factory) içerisine kaydedildi.
+* **`app/errors/handlers.py` (Yeni):** `@errors.app_errorhandler()` dekoratörü kullanılarak tüm uygulama genelindeki 404 ve 500 hataları merkezi kontrol altına alındı. 500 hata durumlarında veritabanı kilitlenmelerini önlemek adına `db.session.rollback()` mekanizması kuruldu.
+* **`app/templates/errors/` (Yeni):** `base.html` şablonundan türetilen, `text-center` ile dikey/yatay ortalanmış ve ana sayfaya dönüş butonu barındıran responsive `404.html` ve `500.html` şablonları Bootstrap 5 sınıflarıyla tasarlandı.
+
+#### 2. Veritabanı Şema Genişletmesi
+* **`app/models.py`:** `User` model sınıfı içerisine, SQLAlchemy 2.x standartlarına uygun biçimde `avatar_img: Mapped[Optional[str]] = mapped_column(String(150), default='default_avatar.png', nullable=True)` kolonu eklendi.
+* Sandbox terminali üzerinden `flask db migrate -m "add avatar_img to user"` komutu tetiklenerek `19296ff4c76f` sürüm göç dosyası üretildi. Ardından `flask db upgrade` komutu manuel olarak koşturularak şema yerel `app.db` (SQLite) dosyasına fiziksel olarak işlendi.
+
+#### 3. Profil Yönetimi ve Güvenli Dosya Yükleme (File Upload)
+* **`app/main/forms.py`:** Flask-WTF bünyesindeki `FileField` ve `FileAllowed` bileşenleri kullanılarak sadece `jpg`, `jpeg` ve `png` uzantılarını kabul eden, CSRF korumalı `ProfileForm` sınıfı üretildi.
+* **`app/main/routes.py` (`/profile` rotası):** GET isteklerinde kullanıcının mevcut verilerini form alanlarına dolduran, POST isteklerinde ise yüklenen dosyaları `werkzeug.utils.secure_filename` süzgecinden geçiren mantık kuruldu. Dosya adı çakışmalarını (Override) kesin olarak önlemek adına dosya isimlerinin başına dinamik olarak `user_{current_user.id}_` ön eki (prefix) eklendi ve `app/static/avatars/` dizinine fiziksel kaydı yapıldı.
+* **`app/templates/main/profile.html` (Yeni):** Sol sütunda kullanıcının güncel avatarını mavi canlı bir çerçevede (`border-primary`, `img-thumbnail rounded-circle`) sergileyen, sağ sütunda ise profil formunu barındıran modern bir kullanıcı arayüzü inşa edildi. Form elementine ikili veri aktarımı için `enctype="multipart/form-data"` kısıtı başarıyla uygulandı.
+
+### 🔍 Karşılaşılan Hatalar ve Çözümler
+* **Hata 1 (ModuleNotFoundError):** Profil doğrulamaları esnasında WTForms kütüphanesinin string e-posta format doğrulaması yapabilmek için yerel sanal ortamda (`venv`) `email-validator` paketine ihtiyaç duyduğu tespit edildi ve sistem *500 Internal Server Error* verdi. Sunucu anlık olarak durdurulup `pip install email-validator` komutuyla bağımlılık çözüldü, sistem yeniden başlatılarak stabilite sağlandı.
+* **Hata 2 (TypeError - NoneType):** Yeni geliştirilen `/profile` rotası ilk kez test edilirken, veritabanı göçünden önce oluşturulmuş mevcut test kullanıcılarının `avatar_img` alanlarının veritabanında `Null` (Python tarafında `None`) kalmasından ötürü `TypeError: can only concatenate str (not "NoneType") to str` hatası tetiklendi ve sistem yeni yazılan özel 500 hata sayfasını başarıyla devreye soktu. `app/main/routes.py` dosyası üzerinde yapılan kod müdahalesiyle dinamik bir `fallback` (varsayılan atama) mekanizması kurgulandı: Eğer `current_user.avatar_img` boş gelirse otomatik olarak `default_avatar.png` çağrılacak şekilde rota güvenli hale getirilerek çökme kesin olarak giderildi.
+
+### 🧠 Öğrenilenler ve Kazanımlar
+* Web uygulamalarında kullanıcı kaynaklı dosya yükleme işlemlerinde siber güvenlik risklerini (zararlı dosya isimleri, uzantı manipülasyonları ve dosya çakışmaları) yönetme pratikleri pekiştirildi.
+* Flask projelerinde büyük mimarileri yönetirken hata sayfalarını ayrı bir Blueprint altında toplamanın kod okunabilirliği ve sürdürülebilirlik açısından faydaları kavrandı.
+* Mevcut veritabanı verilerinin şema göçleri (migration) esnasında kod katmanında yaratabileceği veri tipi uyuşmazlıkları ve bunlara karşı defansif kodlama (defensive programming) teknikleri deneyimlendi.
