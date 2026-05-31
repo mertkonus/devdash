@@ -233,7 +233,7 @@ Arayüz giydirme süreçlerinde ajanlar görsel tasarıma odaklanıp web formlar
 ---
 
 ## Oturum 7: Özel Hata Sayfaları, Profil Yönetimi ve Güvenli Dosya Yükleme (Avatar)
-**Tarih:** 31 Mei 2026 — **Saat:** 12:45 - 14:30  
+**Tarih:** 31 Mayıs 2026 — **Saat:** 12:45 - 14:30  
 **Kullanılan Model/Mod:** Antigravity IDE - Plan & Act Modu
 
 ### 🎯 Oturum Hedefleri
@@ -264,4 +264,36 @@ Arayüz giydirme süreçlerinde ajanlar görsel tasarıma odaklanıp web formlar
 ### 🧠 Öğrenilenler ve Kazanımlar
 * Web uygulamalarında kullanıcı kaynaklı dosya yükleme işlemlerinde siber güvenlik risklerini (zararlı dosya isimleri, uzantı manipülasyonları ve dosya çakışmaları) yönetme pratikleri pekiştirildi.
 * Flask projelerinde büyük mimarileri yönetirken hata sayfalarını ayrı bir Blueprint altında toplamanın kod okunabilirliği ve sürdürülebilirlik açısından faydaları kavrandı.
-* Mevcut veritabanı verilerinin şema göçleri (migration) esnasında kod katmanında yaratabileceği veri tipi uyuşmazlıkları ve bunlara karşı defansif kodlama (defensive programming) teknikleri deneyimlendi.
+* Mevcut veritabanı verilerinin şema göçleri (migration) esnasında kod katmanında yaratabileceği veri tipi uyuşmazlıkları ve bunlara karşı defansif kodlama (defensive programming) teknikleri deneyimlendi.git commit -m "docs: update session 7 diary to include typeerror bug fix and final timeline adjustments"
+
+## Oturum 8 [31.05.2026] [18:30-20:15]
+
+### Hedef
+Bu oturumda, projenin "sade ve çiğ" duran görsel yapısını modern UI/UX prensipleriyle (Dark Mode dahil) premium bir SaaS paneline dönüştürmek, değerlendirme kriterlerinde yer alan "Tam Metin Arama" bonusunu projeye entegre etmek ve dağıtım gereksinimini karşılamak adına projeyi Dockerize etmek amaçlanmıştır.
+
+### Kullandığım Mod ve Model
+- Mod: Plan Modu & Fast Modu
+- Model: Gemini 3 Pro
+- Görünüm: Manager View & Editor View
+
+### Verdiğim Promptlar
+1. "DevDash projesine gece/gündüz modu geçiş altyapısı kur. bootstrap 5 motorunun dinamik renk paletini kullanarak kart yapılarını, shadow ve rounded sınıflarıyla yumuşatıp premium bir makyaj yap."
+2. "Flask routes.py dosyasını güncelleyerek request.args.get('q') ile arama sorgularını yakala. SQLAlchemy üzerinde .like() yerine .ilike() kullanarak büyük/küçük harf duyarsız tam metin arama filtresini kur."
+3. "Proje teknik isterlerinde yer alan Docker kısıtlarına %100 uyumlu Dockerfile, docker-compose.yml ve .dockerignore dosyalarını oluştur. Gunicorn üretim sunucusu ve PostgreSQL servis bağımlılıklarını ekle."
+
+### Ajanın Önerdiği Plan
+Ajan; öncelikle `base.html` üzerinde dinamik tema geçişi sağlayan JavaScript kodlarını kurgulamayı, ardından `routes.py` ve `index.html` içinde döngüleri doğrudan `current_user.notes` yerine backend'den süzülerek gelen `notes` değişkenine bağlamayı ve son aşamada python:3.12-slim tabanlı bir Docker mimarisi kurmayı önerdi.
+
+### Plan'da Sorguladıklarım & Müdahalelerim
+- **Kırık Avatar Görseli Müdahalesi:** Ajan, kullanıcı profil fotoğrafı yüklemediğinde `default_avatar.png` çağırmayı önerdi fakat bu durum tarayıcıda kırık resim simgesi (`broken image`) oluşturdu. Ajana müdahale ederek bir `if/else` Jinja koşulu yazdırdım; eğer resim yoksa kesinlikle `<img>` basılmıyor, onun yerine kullanıcının adının baş harfini ("M") tam ortalayan şık bir CSS placeholder dairesi (`<div>`) devreye giriyor.
+- **Buton Dağınıklığı:** Navbarda yan yana kalabalık duran "Notlarım" ve "Görevlerim" linklerini kaldırtıp, temiz bir görünüm için tek bir kalın fontlu "Panelim" butonu altında birleştirdim.
+
+### Karşılaştığım Hatalar ve Çözümler
+- **Hata (Arama Sonucu Dönmeme):** Arama motorunu test ederken "Fenerbahçe" ve "Final" gibi kayıtlar olmasına rağmen büyük "F" ile arama yapıldığında sonuç listelenmiyordu.
+- **Çözüm:** Arka plandaki veritabanı sorgusunda standart `.like()` fonksiyonunun SQLite ve SQLAlchemy tarafında case-sensitive (harf duyarlı) davrandığını fark ettim. Ajana sorguları `.ilike()` (case-insensitive) yapısına çevirttim ve gelen girdileri `.strip()` ile temizlettim. Sorun tamamen çözüldü.
+
+### Bu Oturumdan Öğrenilenler
+Arama algoritmalarında ve veritabanı katmanlarında büyük/küçük harf hassasiyetinin (`case-sensitivity`) ve Türkçe karakter uyuşmazlıklarının projeyi canlı ortamda nasıl çökertebileceğini deneyimledim. Ayrıca Docker mimarisinde verilerin kaybolmaması için adlandırılmış hacimlerin (`volumes`) ve `environment` bloklarının üretim (production) ortamı için ne kadar hayati olduğunu kavradım.
+
+### Sonraki Oturum İçin Notlar
+Projenin tüm kodlama, görselleştirme ve konteynerizasyon süreçleri sıfır hatayla başarıyla tamamlandı. Son dökümantasyon raporu hazırlandıktan sonra proje final teslimine hazırdır.
