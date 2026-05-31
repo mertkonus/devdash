@@ -3,44 +3,44 @@
 {% block content %}
 <div class="row mt-4">
     <div class="col-md-4 text-center mb-4">
-        <div class="card shadow-sm border-0 pt-4">
+        <div class="card shadow-sm border-0 rounded-4 pt-4 card-hover bg-body">
             <div class="card-body">
-                <img src="{{ avatar_file }}" alt="Profil Resmi" class="img-thumbnail rounded-circle mb-3 border-primary" style="width: 200px; height: 200px; object-fit: cover; border-width: 3px;">
-                <h4 class="card-title fw-bold">{{ current_user.username }}</h4>
+                <img src="{{ avatar_file }}" alt="Profil Resmi" class="img-thumbnail rounded-circle mb-3 border-primary shadow-sm" style="width: 200px; height: 200px; object-fit: cover; border-width: 3px;">
+                <h4 class="card-title fw-bold text-body">{{ current_user.username }}</h4>
                 <p class="text-muted">{{ current_user.email }}</p>
             </div>
         </div>
     </div>
     <div class="col-md-8">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <h3 class="mb-4 text-primary">Profili Düzenle</h3>
+        <div class="card shadow-sm border-0 rounded-4 bg-body">
+            <div class="card-body p-4 p-md-5">
+                <h3 class="mb-4 fw-bold text-primary">Profili Düzenle</h3>
                 <form method="POST" action="" enctype="multipart/form-data" novalidate>
                     {{ form.hidden_tag() }}
                     <div class="mb-3">
-                        {{ form.username.label(class="form-label fw-bold") }}
-                        {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else "")) }}
+                        {{ form.username.label(class="form-label fw-bold text-body") }}
+                        {{ form.username(class="form-control rounded-3" + (" is-invalid" if form.username.errors else "")) }}
                         {% for error in form.username.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="mb-3">
-                        {{ form.email.label(class="form-label fw-bold") }}
-                        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                        {{ form.email.label(class="form-label fw-bold text-body") }}
+                        {{ form.email(class="form-control rounded-3" + (" is-invalid" if form.email.errors else "")) }}
                         {% for error in form.email.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="mb-4">
-                        {{ form.picture.label(class="form-label fw-bold") }}
-                        {{ form.picture(class="form-control" + (" is-invalid" if form.picture.errors else "")) }}
+                        {{ form.picture.label(class="form-label fw-bold text-body") }}
+                        {{ form.picture(class="form-control rounded-3" + (" is-invalid" if form.picture.errors else "")) }}
                         {% for error in form.picture.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
-                        <div class="form-text">Maksimum dosya boyutu tavsiyesi: 2MB. (JPG, PNG, JPEG)</div>
+                        <div class="form-text text-muted">Maksimum dosya boyutu tavsiyesi: 2MB. (JPG, PNG, JPEG)</div>
                     </div>
                     <div class="d-grid">
-                        {{ form.submit(class="btn btn-primary") }}
+                        {{ form.submit(class="btn btn-primary rounded-pill btn-lg shadow-sm") }}
                     </div>
                 </form>
             </div>

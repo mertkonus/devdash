@@ -4,30 +4,30 @@
 <div class="row">
     <!-- SOL SÜTUN: NOTLAR -->
     <div class="col-md-6 mb-4">
-        <h3 class="mb-3 text-primary">Notlarım</h3>
+        <h3 class="mb-3 fw-bold text-primary">Notlarım</h3>
         
         <!-- Not Ekleme Formu -->
-        <div class="card shadow-sm mb-4 border-0">
-            <div class="card-body">
-                <h5 class="card-title">Yeni Not Ekle</h5>
+        <div class="card shadow-sm mb-4 border-0 rounded-4">
+            <div class="card-body p-4">
+                <h5 class="card-title fw-bold">Yeni Not Ekle</h5>
                 <form action="{{ url_for('main.add_note') }}" method="post" novalidate>
                     {{ note_form.hidden_tag() }}
                     <div class="mb-3">
-                        {{ note_form.title.label(class="form-label fw-bold") }}
-                        {{ note_form.title(class="form-control" + (" is-invalid" if note_form.title.errors else "")) }}
+                        {{ note_form.title.label(class="form-label fw-bold text-body") }}
+                        {{ note_form.title(class="form-control rounded-3" + (" is-invalid" if note_form.title.errors else "")) }}
                         {% for error in note_form.title.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="mb-3">
-                        {{ note_form.content.label(class="form-label fw-bold") }}
-                        {{ note_form.content(class="form-control" + (" is-invalid" if note_form.content.errors else ""), rows=3) }}
+                        {{ note_form.content.label(class="form-label fw-bold text-body") }}
+                        {{ note_form.content(class="form-control rounded-3" + (" is-invalid" if note_form.content.errors else ""), rows=3) }}
                         {% for error in note_form.content.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="d-grid">
-                        {{ note_form.submit(class="btn btn-primary") }}
+                        {{ note_form.submit(class="btn btn-primary rounded-pill shadow-sm") }}
                     </div>
                 </form>
             </div>
@@ -37,25 +37,25 @@
         <div class="notes-list">
             {% if current_user.notes %}
                 {% for note in current_user.notes %}
-                <div class="card shadow-sm mb-3 border-start border-primary border-4">
+                <div class="card shadow-sm mb-3 border-start border-primary border-4 rounded-4 card-hover bg-body">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h5 class="card-title mb-1">{{ note.title }}</h5>
+                                <h5 class="card-title mb-1 fw-bold text-body">{{ note.title }}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted small">{{ note.created_at.strftime('%Y-%m-%d %H:%M') }}</h6>
                             </div>
                             <form action="{{ url_for('main.delete_note', note_id=note.id) }}" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Notu Sil">
+                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3" title="Notu Sil">
                                     Sil
                                 </button>
                             </form>
                         </div>
-                        <p class="card-text mt-2">{{ note.content }}</p>
+                        <p class="card-text mt-2 text-body">{{ note.content }}</p>
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="alert alert-light border text-muted" role="alert">
+                <div class="alert shadow-sm border-0 rounded-4 text-muted bg-body-tertiary" role="alert">
                     Henüz hiç notunuz yok.
                 </div>
             {% endif %}
@@ -64,30 +64,30 @@
 
     <!-- SAĞ SÜTUN: GÖREVLER -->
     <div class="col-md-6 mb-4">
-        <h3 class="mb-3 text-success">Görevlerim</h3>
+        <h3 class="mb-3 fw-bold text-success">Görevlerim</h3>
         
         <!-- Görev Ekleme Formu -->
-        <div class="card shadow-sm mb-4 border-0">
-            <div class="card-body">
-                <h5 class="card-title">Yeni Görev Ekle</h5>
+        <div class="card shadow-sm mb-4 border-0 rounded-4">
+            <div class="card-body p-4">
+                <h5 class="card-title fw-bold">Yeni Görev Ekle</h5>
                 <form action="{{ url_for('main.add_task') }}" method="post" novalidate>
                     {{ task_form.hidden_tag() }}
                     <div class="mb-3">
-                        {{ task_form.title.label(class="form-label fw-bold") }}
-                        {{ task_form.title(class="form-control" + (" is-invalid" if task_form.title.errors else "")) }}
+                        {{ task_form.title.label(class="form-label fw-bold text-body") }}
+                        {{ task_form.title(class="form-control rounded-3" + (" is-invalid" if task_form.title.errors else "")) }}
                         {% for error in task_form.title.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="mb-3">
-                        {{ task_form.description.label(class="form-label fw-bold") }}
-                        {{ task_form.description(class="form-control" + (" is-invalid" if task_form.description.errors else ""), rows=2) }}
+                        {{ task_form.description.label(class="form-label fw-bold text-body") }}
+                        {{ task_form.description(class="form-control rounded-3" + (" is-invalid" if task_form.description.errors else ""), rows=2) }}
                         {% for error in task_form.description.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="d-grid">
-                        {{ task_form.submit(class="btn btn-success") }}
+                        {{ task_form.submit(class="btn btn-success rounded-pill shadow-sm") }}
                     </div>
                 </form>
             </div>
@@ -96,11 +96,11 @@
         <!-- Mevcut Görevler -->
         <div class="tasks-list">
             {% if current_user.tasks %}
-                <ul class="list-group shadow-sm border-0">
+                <ul class="list-group shadow-sm border-0 rounded-4">
                 {% for task in current_user.tasks %}
                     {% set is_done = task.status == 'Bitti' %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center {{ 'bg-light text-muted border-secondary border-opacity-25' if is_done else 'border-success border-opacity-50' }} mb-2 rounded">
-                        <div class="{{ 'text-decoration-line-through' if is_done else '' }}">
+                    <li class="list-group-item d-flex justify-content-between align-items-center {{ 'bg-body-tertiary text-muted border-secondary border-opacity-25' if is_done else 'border-success border-opacity-50 bg-body' }} mb-2 rounded-4 card-hover border p-3">
+                        <div class="{{ 'text-decoration-line-through' if is_done else 'text-body' }}">
                             <h6 class="mb-0 fw-bold">{{ task.title }}</h6>
                             {% if task.description %}
                                 <small class="d-block mt-1">{{ task.description }}</small>
@@ -110,21 +110,21 @@
                             <!-- Toggle Button -->
                             <form action="{{ url_for('main.toggle_task', task_id=task.id) }}" method="post" class="d-inline me-1">
                                 {% if is_done %}
-                                    <button type="submit" class="btn btn-sm btn-secondary">Geri Al</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Geri Al</button>
                                 {% else %}
-                                    <button type="submit" class="btn btn-sm btn-success">Tamamla</button>
+                                    <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm">Tamamla</button>
                                 {% endif %}
                             </form>
                             <!-- Delete Button -->
                             <form action="{{ url_for('main.delete_task', task_id=task.id) }}" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">Sil</button>
                             </form>
                         </div>
                     </li>
                 {% endfor %}
                 </ul>
             {% else %}
-                <div class="alert alert-light border text-muted" role="alert">
+                <div class="alert shadow-sm border-0 rounded-4 text-muted bg-body-tertiary" role="alert">
                     Bekleyen bir göreviniz yok.
                 </div>
             {% endif %}

@@ -1,52 +1,52 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center mt-4">
     <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0 rounded-4 card-hover bg-body">
             <div class="card-body p-4 p-md-5">
-                <h3 class="card-title text-center mb-4">Kayıt Ol</h3>
+                <h3 class="card-title text-center mb-4 fw-bold text-primary">Kayıt Ol</h3>
                 <form action="" method="post" novalidate>
                     {{ form.hidden_tag() }}
                     
                     <div class="mb-3">
-                        {{ form.username.label(class="form-label") }}
-                        {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else "")) }}
+                        {{ form.username.label(class="form-label fw-bold text-body") }}
+                        {{ form.username(class="form-control rounded-3" + (" is-invalid" if form.username.errors else "")) }}
                         {% for error in form.username.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                     
                     <div class="mb-3">
-                        {{ form.email.label(class="form-label") }}
-                        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                        {{ form.email.label(class="form-label fw-bold text-body") }}
+                        {{ form.email(class="form-control rounded-3" + (" is-invalid" if form.email.errors else "")) }}
                         {% for error in form.email.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                     
                     <div class="mb-3">
-                        {{ form.password.label(class="form-label") }}
-                        {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else "")) }}
+                        {{ form.password.label(class="form-label fw-bold text-body") }}
+                        {{ form.password(class="form-control rounded-3" + (" is-invalid" if form.password.errors else "")) }}
                         {% for error in form.password.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                     
                     <div class="mb-4">
-                        {{ form.confirm_password.label(class="form-label") }}
-                        {{ form.confirm_password(class="form-control" + (" is-invalid" if form.confirm_password.errors else "")) }}
+                        {{ form.confirm_password.label(class="form-label fw-bold text-body") }}
+                        {{ form.confirm_password(class="form-control rounded-3" + (" is-invalid" if form.confirm_password.errors else "")) }}
                         {% for error in form.confirm_password.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                     </div>
                     
                     <div class="d-grid">
-                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                        {{ form.submit(class="btn btn-primary btn-lg rounded-pill shadow-sm") }}
                     </div>
                 </form>
                 <div class="mt-4 text-center">
-                    <p class="text-muted mb-0">Zaten hesabınız var mı? <a href="{{ url_for('auth.login') }}" class="text-decoration-none">Giriş Yap</a></p>
+                    <p class="text-muted mb-0">Zaten hesabınız var mı? <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-bold">Giriş Yap</a></p>
                 </div>
             </div>
         </div>
