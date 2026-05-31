@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center py-5 mt-5">
+    <div class="col-md-8 text-center">
+        <h1 class="display-1 fw-bold text-danger">500</h1>
+        <h2 class="mb-4">Sistemsel Bir Hata Oluştu</h2>
+        <p class="lead text-muted mb-5">Beklenmeyen bir iç sunucu hatasıyla karşılaştık. Lütfen daha sonra tekrar deneyin veya ana sayfaya dönerek devam edin.</p>
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg shadow-sm">Ana Sayfaya Dön</a>
+    </div>
+</div>
+{% endblock %}
